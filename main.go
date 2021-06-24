@@ -1,12 +1,14 @@
 package main
 
 import (
+	"evaluate_backend/app"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	app.Init()
 	// 1.创建路由
 	r := gin.Default()
 	// 2.绑定路由规则，执行的函数

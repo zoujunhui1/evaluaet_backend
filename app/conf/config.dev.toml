@@ -1,0 +1,6 @@
+[evaMysql]
+user = "root"
+password = "Junhui_zou100!"
+host = "sh-cdb-9y14bazq.sql.tencentcdb.com"
+hostPort = "59839"
+database = "evaluate"
