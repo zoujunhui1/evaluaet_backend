@@ -13,7 +13,11 @@ import (
 
 func GetProductListSrv(ctx *gin.Context, req *request.GetProductListReq) (*response.GetProductListResp, error) {
 	evaluateDB := provider.EvaluateDB
-	total, list, err := model.GetProduct(ctx, evaluateDB, req)
+	condition := make(map[string]interface{})
+	if req.ProductID > 0 {
+		condition["product_id"] = req.ProductID
+	}
+	total, list, err := model.GetProduct(ctx, evaluateDB, condition, req.Page, req.PageSize)
 	if err != nil {
 		return nil, err
 	}
@@ -30,5 +34,50 @@ func GetProductListSrv(ctx *gin.Context, req *request.GetProductListReq) (*respo
 		resp.List[k].CreatedAt = time.Unix(createAt, 0).Format("2006-01-02 15:04:05")
 	}
 	return resp, nil
+}
 
+func EditProductSrv(ctx *gin.Context, req *request.EditProductReq) error {
+	evaluateDB := provider.EvaluateDB
+	condition := map[string]interface{}{
+		"product_id": req.ProductID,
+	}
+	updateAttr := make(map[string]interface{})
+	if req.Name != "" {
+		updateAttr["name"] = req.Name
+	}
+	if req.ProductType != "" {
+		updateAttr["product_type"] = req.ProductType
+	}
+	if req.IssueTime != "" {
+		updateAttr["issue_time"] = req.IssueTime
+	}
+	if req.Denomination != "" {
+		updateAttr["denomination"] = req.Denomination
+	}
+	if req.ProductVersion != "" {
+		updateAttr["product_version"] = req.ProductVersion
+	}
+	if req.Weight > 0 {
+		updateAttr["weight"] = req.Weight
+	}
+	if req.Thick > 0 {
+		updateAttr["thick"] = req.Thick
+	}
+	if req.Diameter > 0 {
+		updateAttr["diameter"] = req.Diameter
+	}
+	if req.Score != "" {
+		updateAttr["score"] = req.Score
+	}
+	if req.IdentifyResult != "" {
+		updateAttr["identify_result"] = req.IdentifyResult
+	}
+	if req.Desc != "" {
+		updateAttr["desc"] = req.Desc
+	}
+	err := model.UpdateProduct(ctx, evaluateDB, condition, updateAttr)
+	if err != nil {
+		return err
+	}
+	return nil
 }

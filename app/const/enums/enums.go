@@ -5,6 +5,8 @@ const (
 	ErrorSystemException int32 = 20001
 	ErrorInputValidate   int32 = 20002
 	ErrorFileUploadFail  int32 = 20003
+
+	ErrorFileUpdateFail int32 = 30001
 )
 
 const (
@@ -20,6 +22,7 @@ var (
 		ErrorSystemException: "网络异常，请稍后重试",
 		ErrorInputValidate:   "请检查输入是否正确",
 		ErrorFileUploadFail:  "文件上传失败",
+		ErrorFileUpdateFail:  "更新失败",
 	}
 )
 
