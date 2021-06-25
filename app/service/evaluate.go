@@ -1,6 +1,7 @@
 package service
 
 import (
+	"evaluate_backend/app/const/enums"
 	"evaluate_backend/app/dal/request"
 	"evaluate_backend/app/dal/response"
 	"evaluate_backend/app/model"
@@ -74,6 +75,21 @@ func EditProductSrv(ctx *gin.Context, req *request.EditProductReq) error {
 	}
 	if req.Desc != "" {
 		updateAttr["desc"] = req.Desc
+	}
+	err := model.UpdateProduct(ctx, evaluateDB, condition, updateAttr)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DelProductSrv(ctx *gin.Context, req *request.DelProductReq) error {
+	evaluateDB := provider.EvaluateDB
+	condition := map[string]interface{}{
+		"product_id": req.ProductID,
+	}
+	updateAttr := map[string]interface{}{
+		"is_deleted": enums.IsDeletedYes,
 	}
 	err := model.UpdateProduct(ctx, evaluateDB, condition, updateAttr)
 	if err != nil {

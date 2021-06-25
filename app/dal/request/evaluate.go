@@ -50,3 +50,15 @@ func (req *EditProductReq) Validate(ctx *gin.Context) error {
 	}
 	return nil
 }
+
+//删除产品
+type DelProductReq struct {
+	ProductID int64 `json:"product_id" binding:"required"` //产品id
+}
+
+func (req *DelProductReq) Validate(ctx *gin.Context) error {
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		return errors.Errorf("params validate err(%v)", err)
+	}
+	return nil
+}

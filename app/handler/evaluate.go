@@ -45,3 +45,21 @@ func EditProduct(ctx *gin.Context) {
 	}
 	Success(ctx, nil)
 }
+
+/*
+	删除产品
+*/
+func DelProduct(ctx *gin.Context) {
+	//获取参数
+	req := &request.DelProductReq{}
+	if err := req.Validate(ctx); err != nil {
+		log.Errorf("params validate error (%v)", err)
+		Fail(ctx, enums.ErrorInputValidate)
+		return
+	}
+	err := service.DelProductSrv(ctx, req)
+	if err != nil {
+		Fail(ctx, enums.ErrorFileUpdateFail)
+	}
+	Success(ctx, nil)
+}

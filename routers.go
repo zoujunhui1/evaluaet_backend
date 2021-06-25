@@ -13,6 +13,8 @@ func routeInit() *gin.Engine {
 		evaluate.GET("/list", handler.GetProductList)
 		//编辑产品
 		evaluate.POST("/edit", handler.EditProduct)
+		//删除产品
+		evaluate.POST("/del", handler.DelProduct)
 	}
 	return r
 }
