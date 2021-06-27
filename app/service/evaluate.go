@@ -22,7 +22,9 @@ func GetProductListSrv(ctx *gin.Context, req *request.GetProductListReq) (*respo
 	if err != nil {
 		return nil, err
 	}
-	resp := &response.GetProductListResp{}
+	resp := &response.GetProductListResp{
+		List: []response.Product{},
+	}
 	resp.Total = total
 	resp.PageSize = req.PageSize
 	resp.Page = req.Page
@@ -30,7 +32,29 @@ func GetProductListSrv(ctx *gin.Context, req *request.GetProductListReq) (*respo
 		log.Error("GetProductListSrv copier.Copy is error (%v)", err)
 		return nil, err
 	}
-	for k, v := range *list {
+	for k, v := range list {
+		createAt := v.CreatedAt.Unix()
+		resp.List[k].CreatedAt = time.Unix(createAt, 0).Format("2006-01-02 15:04:05")
+	}
+	return resp, nil
+}
+
+func GetProductInfoSrv(ctx *gin.Context, req *request.GetProductInfoReq) (*response.GetProductInfoResp, error) {
+	evaluateDB := provider.EvaluateDB
+	condition := make(map[string]interface{})
+	condition["product_id"] = req.ProductID
+	_, list, err := model.GetProduct(ctx, evaluateDB, condition, 1, 1)
+	if err != nil {
+		return nil, err
+	}
+	resp := &response.GetProductInfoResp{
+		List: []response.Product{},
+	}
+	if err := copier.Copy(&resp.List, list); err != nil {
+		log.Error("GetProductListSrv copier.Copy is error (%v)", err)
+		return nil, err
+	}
+	for k, v := range list {
 		createAt := v.CreatedAt.Unix()
 		resp.List[k].CreatedAt = time.Unix(createAt, 0).Format("2006-01-02 15:04:05")
 	}

@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetProduct(ctx *gin.Context, db *gorm.DB, condition map[string]interface{}, page, pageSize int) (total int64, productList *[]database.Product, err error) {
+func GetProduct(ctx *gin.Context, db *gorm.DB, condition map[string]interface{}, page, pageSize int) (total int64, productList []database.Product, err error) {
 	m := database.Product{}
 	db = db.Model(m).Select(util.GetJsonFields(m))
 	offset := util.GetOffset(page, pageSize)

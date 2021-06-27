@@ -62,3 +62,18 @@ func (req *DelProductReq) Validate(ctx *gin.Context) error {
 	}
 	return nil
 }
+
+//产品详情
+type GetProductInfoReq struct {
+	ProductID int64 `form:"product_id" json:"product_id"`
+}
+
+func (req *GetProductInfoReq) Validate(ctx *gin.Context) error {
+	if err := ctx.BindQuery(&req); err != nil {
+		return errors.Errorf("params validate err(%v)", err)
+	}
+	if req.ProductID <= 0 {
+		return errors.Errorf("product_id(%d) <= 0", req.ProductID)
+	}
+	return nil
+}

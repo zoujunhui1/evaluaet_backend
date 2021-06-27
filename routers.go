@@ -7,16 +7,16 @@ import (
 
 func routeInit() *gin.Engine {
 	r := gin.Default()
-	evaluate := r.Group("/evaluate")
+	evaluate := r.Group("/evaluate/product")
 	{
 		//产品列表
 		evaluate.GET("/list", handler.GetProductList)
+		//获取产品详情
+		evaluate.GET("/info", handler.GetProductInfo)
 		//编辑产品
 		evaluate.POST("/edit", handler.EditProduct)
 		//删除产品
 		evaluate.POST("/del", handler.DelProduct)
-		//获取产品详情
-		evaluate.GET("/info", handler.DelProduct)
 	}
 	common := r.Group("/common")
 	{
