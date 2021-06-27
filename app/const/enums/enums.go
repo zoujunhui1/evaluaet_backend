@@ -10,8 +10,9 @@ const (
 )
 
 const (
-	IsDeletedYes int32 = 1
-	IsDeletedNo  int32 = 0
+	IsDeletedYes int32  = 1
+	IsDeletedNo  int32  = 0
+	PwdSalt      string = "Evaluate"
 )
 
 var (

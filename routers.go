@@ -15,6 +15,13 @@ func routeInit() *gin.Engine {
 		evaluate.POST("/edit", handler.EditProduct)
 		//删除产品
 		evaluate.POST("/del", handler.DelProduct)
+		//获取产品详情
+		evaluate.GET("/info", handler.DelProduct)
+	}
+	common := r.Group("/common")
+	{
+		//登陆
+		common.POST("/login", handler.Login)
 	}
 	return r
 }
