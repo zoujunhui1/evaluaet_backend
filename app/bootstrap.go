@@ -13,4 +13,6 @@ func Init() {
 	if err := provider.InitMysql(config.Conf); err != nil {
 		panic(fmt.Sprintf("MySQL Initialization Error: %v", err))
 	}
+	//cos
+	provider.InitCos(config.Conf)
 }

@@ -4,7 +4,6 @@ import (
 	"evaluate_backend/app/const/enums"
 	"evaluate_backend/app/dal/request"
 	"evaluate_backend/app/service"
-
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -47,4 +46,21 @@ func Logout(ctx *gin.Context) {
 		return
 	}
 	Success(ctx, nil)
+}
+
+func ImageUpload(ctx *gin.Context) {
+	//获取参数
+	req := &request.ImageUploadReq{}
+	if err := req.Validate(ctx); err != nil {
+		log.Errorf("params validate error (%v)", err)
+		Fail(ctx, enums.ErrorInputValidate)
+		return
+	}
+	resp, err := service.ImageUploadSrv(ctx, req)
+	if err != nil {
+		log.Errorf("ImageUpload resp is error (%v)", err)
+		Fail(ctx, enums.ErrorSystemException)
+		return
+	}
+	Success(ctx, resp)
 }

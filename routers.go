@@ -22,8 +22,10 @@ func routeInit() *gin.Engine {
 	{
 		//登陆
 		common.POST("/login", handler.Login)
-		//登出
+		//退出
 		common.POST("/logout", handler.Logout)
+		//图片上传
+		common.POST("/image_upload", handler.ImageUpload)
 	}
 	return r
 }

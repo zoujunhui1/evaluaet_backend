@@ -4,3 +4,8 @@ password = "Junhui_zou100!"
 host = "sh-cdb-9y14bazq.sql.tencentcdb.com"
 hostPort = "59839"
 database = "evaluate"
+
+[Cos]
+host = "https://pingce-new-1256184476.cos.ap-nanjing.myqcloud.com"
+secretID = "AKIDDF1XlkTw72h7G8nBJAk48vSiiRs3xawT"
+secretKey = "IK4YliOnwoPjmZ6LK3VgaEbhW5NPAesr"

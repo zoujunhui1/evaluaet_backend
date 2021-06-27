@@ -3,6 +3,7 @@ package request
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"mime/multipart"
 )
 
 //登陆
@@ -26,6 +27,18 @@ type LogoutReq struct {
 
 func (req *LogoutReq) Validate(ctx *gin.Context) error {
 	if err := ctx.ShouldBindJSON(&req); err != nil {
+		return errors.Errorf("params validate err(%v)", err)
+	}
+	return nil
+}
+
+//图片上传
+type ImageUploadReq struct {
+	Image *multipart.FileHeader `form:"image" binding:"required"`
+}
+
+func (req *ImageUploadReq) Validate(ctx *gin.Context) error {
+	if err := ctx.ShouldBind(&req); err != nil {
 		return errors.Errorf("params validate err(%v)", err)
 	}
 	return nil

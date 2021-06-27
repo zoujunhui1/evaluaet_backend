@@ -12,6 +12,7 @@ var (
 
 type Config struct {
 	EvaMysql *MySqlConfig
+	Cos      *CosConfig
 }
 
 type MySqlConfig struct {
@@ -20,6 +21,12 @@ type MySqlConfig struct {
 	Host     string
 	HostPort string
 	Database string
+}
+
+type CosConfig struct {
+	Host      string
+	SecretID  string
+	SecretKey string
 }
 
 func Init() {

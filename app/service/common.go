@@ -71,3 +71,22 @@ func LogoutSrv(ctx *gin.Context, req *request.LogoutReq) error {
 	}
 	return nil
 }
+
+func ImageUploadSrv(ctx *gin.Context, req *request.ImageUploadReq) (*response.ImageUploadResp, error) {
+	tmpStr := strconv.FormatInt(time.Now().Unix(), 10)
+	name := "evaluate_" + tmpStr + ".png"
+	fileContent, err := req.Image.Open()
+	if err != nil {
+		return nil, err
+	}
+	if fileContent == nil {
+		return nil, errors.Errorf("fileContent is nil ")
+	}
+	defer fileContent.Close()
+	url, err := util.ImageUploadCommon(name, fileContent)
+	if err != nil {
+		return nil, err
+	}
+	resp := response.ImageUploadResp{Url: url}
+	return &resp, nil
+}
