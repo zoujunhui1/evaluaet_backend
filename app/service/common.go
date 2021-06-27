@@ -47,3 +47,27 @@ func LoginSrv(ctx *gin.Context, req *request.LoginReq) (*response.LoginResp, err
 	}
 	return resp, nil
 }
+
+func LogoutSrv(ctx *gin.Context, req *request.LogoutReq) error {
+	db := provider.EvaluateDB
+	//查询用户是否存在
+	condition := map[string]interface{}{
+		"id":    req.ID,
+		"token": req.Token,
+	}
+	account, err := model.AccountGet(ctx, db, condition)
+	if err != nil {
+		return err
+	}
+	if len(account) == 0 {
+		return errors.Errorf("user is not exists %(+v)", req)
+	}
+	if err := model.AccountUpdate(ctx, db, map[string]interface{}{
+		"id": req.ID,
+	}, map[string]interface{}{
+		"token": "",
+	}); err != nil {
+		return err
+	}
+	return nil
+}

@@ -17,3 +17,16 @@ func (req *LoginReq) Validate(ctx *gin.Context) error {
 	}
 	return nil
 }
+
+//退出
+type LogoutReq struct {
+	ID    int64  `json:"id" binding:"required"`
+	Token string `json:"token"`
+}
+
+func (req *LogoutReq) Validate(ctx *gin.Context) error {
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		return errors.Errorf("params validate err(%v)", err)
+	}
+	return nil
+}

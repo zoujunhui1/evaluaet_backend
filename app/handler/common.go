@@ -28,3 +28,23 @@ func Login(ctx *gin.Context) {
 	}
 	Success(ctx, resp)
 }
+
+/*
+	退出
+*/
+func Logout(ctx *gin.Context) {
+	//获取参数
+	req := &request.LogoutReq{}
+	if err := req.Validate(ctx); err != nil {
+		log.Errorf("params validate error (%v)", err)
+		Fail(ctx, enums.ErrorInputValidate)
+		return
+	}
+	err := service.LogoutSrv(ctx, req)
+	if err != nil {
+		log.Errorf("Logout resp is error (%v)", err)
+		Fail(ctx, enums.ErrorSystemException)
+		return
+	}
+	Success(ctx, nil)
+}
