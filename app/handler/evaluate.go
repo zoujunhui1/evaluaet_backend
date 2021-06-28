@@ -62,6 +62,7 @@ func EditProduct(ctx *gin.Context) {
 	err := service.EditProductSrv(ctx, req)
 	if err != nil {
 		Fail(ctx, enums.ErrorFileUpdateFail)
+		return
 	}
 	Success(ctx, nil)
 }
@@ -80,6 +81,7 @@ func DelProduct(ctx *gin.Context) {
 	err := service.DelProductSrv(ctx, req)
 	if err != nil {
 		Fail(ctx, enums.ErrorFileUpdateFail)
+		return
 	}
 	Success(ctx, nil)
 }

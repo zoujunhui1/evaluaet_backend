@@ -6,16 +6,26 @@ import (
 	"evaluate_backend/app/dal/database"
 	"evaluate_backend/app/provider"
 	"evaluate_backend/app/util"
+	"github.com/pkg/errors"
 )
 
 func GetProduct(ctx context.Context, condition map[string]interface{}, page, pageSize int) (total int64, productList []database.Product, err error) {
 	db := provider.EvaluateDB
 	m := database.Product{}
-	db = db.Model(m).Select(util.GetJsonFields(m))
+	db = db.Model(m).Select(util.GetJsonFields(m)).Where("is_deleted = ?", enums.IsDeletedNo)
+	if v, ok := condition["order_by"]; ok {
+		db = db.Order(v)
+	}
+	if v, ok := condition["status"]; ok {
+		db = db.Where("status", v)
+	}
+	if v, ok := condition["product_id"]; ok {
+		db = db.Where("product_id", v)
+	}
 	offset := util.GetOffset(page, pageSize)
 	totalQuery := db
-	totalQuery.Where(condition).Where("is_deleted = ?", enums.IsDeletedNo).Count(&total)
-	result := db.Where(condition).Where("is_deleted = ?", enums.IsDeletedNo).Offset(offset).Limit(pageSize).Order("id desc").Find(&productList)
+	totalQuery.Count(&total)
+	result := db.Offset(offset).Limit(pageSize).Order("id desc").Find(&productList)
 	if result.Error != nil {
 		return 0, nil, result.Error
 	}
@@ -26,6 +36,22 @@ func UpdateProduct(ctx context.Context, condition map[string]interface{}, update
 	db := provider.EvaluateDB
 	m := database.Product{}
 	result := db.Model(m).Where(condition).Updates(updateAttrs)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+func UpdateMultiProduct(ctx context.Context, condition map[string]interface{}, updateAttrs map[string]interface{}) error {
+	db := provider.EvaluateDB
+	m := database.Product{}
+	if len(condition) == 0 {
+		return errors.Errorf("condition is empty")
+	}
+	if v, ok := condition["product_ids"]; ok {
+		db = db.Where("product_id in (?)", v)
+	}
+	result := db.Model(m).Updates(updateAttrs)
 	if result.Error != nil {
 		return result.Error
 	}

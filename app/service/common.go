@@ -92,7 +92,7 @@ func ImageUploadSrv(ctx *gin.Context, req *request.ImageUploadReq) (*response.Im
 
 func CreateQrCodeSrv(bindUrl string) (string, error) {
 	//1.生成二维码
-	png, err := qrcode.Encode(bindUrl, qrcode.Medium, 256)
+	png, err := qrcode.Encode(bindUrl, qrcode.Medium, 128)
 	if err != nil {
 		return "", err
 	}

@@ -13,6 +13,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.27
+	github.com/thoas/go-funk v0.8.0
 	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
 	gorm.io/driver/mysql v1.1.1
 	gorm.io/gorm v1.21.11

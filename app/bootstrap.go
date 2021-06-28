@@ -20,7 +20,7 @@ func Init() {
 	provider.InitCos(config.Conf)
 	//cron
 	cronClient := provider.InitCron()
-	_, err := cronClient.AddFunc("*/1 * * * * *", service.CreateProductQcCodeCron)
+	_, err := cronClient.AddFunc("10 * * * * *", service.CreateProductQcCodeCron)
 	if err != nil {
 		log.Error("cron err(%+v)", err)
 	}

@@ -31,7 +31,7 @@ func (req *GetProductListReq) Validate(ctx *gin.Context) error {
 //编辑产品
 type EditProductReq struct {
 	ProductID      int64  `json:"product_id" binding:"required"` //产品id
-	Name           string `json:"name"`                          //名称
+	Name           string `json:"name" binding:"required"`       //名称
 	ProductType    string `json:"product_type"`                  //产品类型
 	IssueTime      string `json:"issue_time"`                    //发行时间
 	Denomination   string `json:"denomination"`                  //面值
@@ -42,11 +42,12 @@ type EditProductReq struct {
 	Score          string `json:"score"`                         //评级分数
 	IdentifyResult string `json:"identify_result"`               //鉴定结果
 	Desc           string `json:"desc"`                          //备注说明
+	ProductCount   int64  `json:"product_count"`                 //生成的产品数量
 }
 
 func (req *EditProductReq) Validate(ctx *gin.Context) error {
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		return errors.Errorf("params validate err(%v)", err)
+		return errors.Errorf("params ShouldBindJSON validate err(%v)", err)
 	}
 	return nil
 }

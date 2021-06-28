@@ -13,6 +13,7 @@ var (
 type Config struct {
 	EvaMysql *MySqlConfig
 	Cos      *CosConfig
+	Custom   *Custom
 }
 
 type MySqlConfig struct {
@@ -29,14 +30,18 @@ type CosConfig struct {
 	SecretKey string
 }
 
+type Custom struct {
+	BindUrl string
+}
+
 func Init() {
 	LoadConf()
 }
 
 func LoadConf() {
 	dir, _ := os.Getwd()
-	os.Getenv("")
 	path := dir + "/app/conf/config.dev.toml"
+	//path := "/Users/zjh/go/src/evaluate_backend/app/conf/config.dev.toml"
 	if _, err := toml.DecodeFile(path, &Conf); err != nil {
 		fmt.Println(err)
 		return

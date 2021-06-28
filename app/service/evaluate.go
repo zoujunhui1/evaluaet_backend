@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
 	log "github.com/sirupsen/logrus"
+	"github.com/thoas/go-funk"
 	"time"
 )
 
@@ -59,10 +60,27 @@ func GetProductInfoSrv(ctx *gin.Context, req *request.GetProductInfoReq) (*respo
 }
 
 func EditProductSrv(ctx *gin.Context, req *request.EditProductReq) error {
+	//生成的产品数量大于0，则说明要更新当前的产品数量（1+req.ProductCount）
+	multiProductIDs := []int64{}
+	if req.ProductCount > 0 {
+		//去数据库里找对应数量的并且未被编辑过的产品
+		_, editReadyData, err := model.GetProduct(ctx, map[string]interface{}{
+			"status":   enums.ProductStatusEditReady,
+			"order_by": "product_id asc",
+		}, 1, int(req.ProductCount))
+		if err != nil {
+			log.Errorf("model.GetProduct error (%v)", err)
+			return err
+		}
+		tmp := funk.Get(editReadyData, "ProductID")
+		multiProductIDs = tmp.([]int64)
+	}
+	multiProductIDs = append(multiProductIDs, req.ProductID)
 	condition := map[string]interface{}{
-		"product_id": req.ProductID,
+		"product_ids": multiProductIDs,
 	}
 	updateAttr := make(map[string]interface{})
+	updateAttr["status"] = enums.ProductStatusQrReady //更新为已经编辑完成
 	if req.Name != "" {
 		updateAttr["name"] = req.Name
 	}
@@ -96,10 +114,12 @@ func EditProductSrv(ctx *gin.Context, req *request.EditProductReq) error {
 	if req.Desc != "" {
 		updateAttr["desc"] = req.Desc
 	}
-	err := model.UpdateProduct(ctx, condition, updateAttr)
+	err := model.UpdateMultiProduct(ctx, condition, updateAttr)
 	if err != nil {
 		return err
 	}
+	//图片操作
+
 	return nil
 }
 
