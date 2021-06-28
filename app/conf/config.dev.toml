@@ -9,3 +9,6 @@ database = "evaluate"
 host = "https://pingce-new-1256184476.cos.ap-nanjing.myqcloud.com"
 secretID = "AKIDDF1XlkTw72h7G8nBJAk48vSiiRs3xawT"
 secretKey = "IK4YliOnwoPjmZ6LK3VgaEbhW5NPAesr"
+
+[Custom]
+host = "http://81.71.91.145:8080"

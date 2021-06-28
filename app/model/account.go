@@ -1,14 +1,15 @@
 package model
 
 import (
+	"context"
 	"evaluate_backend/app/const/enums"
 	"evaluate_backend/app/dal/database"
+	"evaluate_backend/app/provider"
 	"evaluate_backend/app/util"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func AccountUpdate(ctx *gin.Context, db *gorm.DB, condition map[string]interface{}, updateAttrs map[string]interface{}) error {
+func AccountUpdate(ctx context.Context, condition map[string]interface{}, updateAttrs map[string]interface{}) error {
+	db := provider.EvaluateDB
 	m := database.Account{}
 	result := db.Model(m).Where(condition).Updates(updateAttrs)
 	if result.Error != nil {
@@ -17,7 +18,8 @@ func AccountUpdate(ctx *gin.Context, db *gorm.DB, condition map[string]interface
 	return nil
 }
 
-func AccountGet(ctx *gin.Context, db *gorm.DB, condition map[string]interface{}) ([]database.Account, error) {
+func AccountGet(ctx context.Context, condition map[string]interface{}) ([]database.Account, error) {
+	db := provider.EvaluateDB
 	m := database.Account{}
 	account := []database.Account{}
 	db = db.Model(m).Select(util.GetJsonFields(m))

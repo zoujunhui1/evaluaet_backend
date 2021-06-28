@@ -5,7 +5,6 @@ import (
 	"evaluate_backend/app/dal/request"
 	"evaluate_backend/app/dal/response"
 	"evaluate_backend/app/model"
-	"evaluate_backend/app/provider"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
 	log "github.com/sirupsen/logrus"
@@ -13,12 +12,11 @@ import (
 )
 
 func GetProductListSrv(ctx *gin.Context, req *request.GetProductListReq) (*response.GetProductListResp, error) {
-	evaluateDB := provider.EvaluateDB
 	condition := make(map[string]interface{})
 	if req.ProductID > 0 {
 		condition["product_id"] = req.ProductID
 	}
-	total, list, err := model.GetProduct(ctx, evaluateDB, condition, req.Page, req.PageSize)
+	total, list, err := model.GetProduct(ctx, condition, req.Page, req.PageSize)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +27,7 @@ func GetProductListSrv(ctx *gin.Context, req *request.GetProductListReq) (*respo
 	resp.PageSize = req.PageSize
 	resp.Page = req.Page
 	if err := copier.Copy(&resp.List, list); err != nil {
-		log.Error("GetProductListSrv copier.Copy is error (%v)", err)
+		log.Errorf("GetProductListSrv copier.Copy is error (%+v)", err)
 		return nil, err
 	}
 	for k, v := range list {
@@ -40,10 +38,9 @@ func GetProductListSrv(ctx *gin.Context, req *request.GetProductListReq) (*respo
 }
 
 func GetProductInfoSrv(ctx *gin.Context, req *request.GetProductInfoReq) (*response.GetProductInfoResp, error) {
-	evaluateDB := provider.EvaluateDB
 	condition := make(map[string]interface{})
 	condition["product_id"] = req.ProductID
-	_, list, err := model.GetProduct(ctx, evaluateDB, condition, 1, 1)
+	_, list, err := model.GetProduct(ctx, condition, 1, 1)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +48,7 @@ func GetProductInfoSrv(ctx *gin.Context, req *request.GetProductInfoReq) (*respo
 		List: []response.Product{},
 	}
 	if err := copier.Copy(&resp.List, list); err != nil {
-		log.Error("GetProductListSrv copier.Copy is error (%v)", err)
+		log.Errorf("GetProductListSrv copier.Copy is error (%v)", err)
 		return nil, err
 	}
 	for k, v := range list {
@@ -62,7 +59,6 @@ func GetProductInfoSrv(ctx *gin.Context, req *request.GetProductInfoReq) (*respo
 }
 
 func EditProductSrv(ctx *gin.Context, req *request.EditProductReq) error {
-	evaluateDB := provider.EvaluateDB
 	condition := map[string]interface{}{
 		"product_id": req.ProductID,
 	}
@@ -100,7 +96,7 @@ func EditProductSrv(ctx *gin.Context, req *request.EditProductReq) error {
 	if req.Desc != "" {
 		updateAttr["desc"] = req.Desc
 	}
-	err := model.UpdateProduct(ctx, evaluateDB, condition, updateAttr)
+	err := model.UpdateProduct(ctx, condition, updateAttr)
 	if err != nil {
 		return err
 	}
@@ -108,14 +104,13 @@ func EditProductSrv(ctx *gin.Context, req *request.EditProductReq) error {
 }
 
 func DelProductSrv(ctx *gin.Context, req *request.DelProductReq) error {
-	evaluateDB := provider.EvaluateDB
 	condition := map[string]interface{}{
 		"product_id": req.ProductID,
 	}
 	updateAttr := map[string]interface{}{
 		"is_deleted": enums.IsDeletedYes,
 	}
-	err := model.UpdateProduct(ctx, evaluateDB, condition, updateAttr)
+	err := model.UpdateProduct(ctx, condition, updateAttr)
 	if err != nil {
 		return err
 	}

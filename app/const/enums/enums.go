@@ -15,6 +15,12 @@ const (
 	PwdSalt      string = "Evaluate"
 )
 
+const (
+	ProductStatusEditReady int32 = 0 //待编辑
+	ProductStatusQrReady   int32 = 1 //待生成二维码
+	ProductStatusQrDone    int32 = 2 //二维码生成完成
+)
+
 var (
 	//对提示信息强制指定
 	FrontMessage = map[int32]string{

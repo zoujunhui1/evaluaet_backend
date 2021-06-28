@@ -1,14 +1,15 @@
 package model
 
 import (
+	"context"
 	"evaluate_backend/app/const/enums"
 	"evaluate_backend/app/dal/database"
+	"evaluate_backend/app/provider"
 	"evaluate_backend/app/util"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func GetProduct(ctx *gin.Context, db *gorm.DB, condition map[string]interface{}, page, pageSize int) (total int64, productList []database.Product, err error) {
+func GetProduct(ctx context.Context, condition map[string]interface{}, page, pageSize int) (total int64, productList []database.Product, err error) {
+	db := provider.EvaluateDB
 	m := database.Product{}
 	db = db.Model(m).Select(util.GetJsonFields(m))
 	offset := util.GetOffset(page, pageSize)
@@ -21,7 +22,8 @@ func GetProduct(ctx *gin.Context, db *gorm.DB, condition map[string]interface{},
 	return
 }
 
-func UpdateProduct(ctx *gin.Context, db *gorm.DB, condition map[string]interface{}, updateAttrs map[string]interface{}) error {
+func UpdateProduct(ctx context.Context, condition map[string]interface{}, updateAttrs map[string]interface{}) error {
+	db := provider.EvaluateDB
 	m := database.Product{}
 	result := db.Model(m).Where(condition).Updates(updateAttrs)
 	if result.Error != nil {

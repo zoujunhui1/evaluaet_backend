@@ -1,9 +1,12 @@
 package app
 
 import (
+	"evaluate_backend/app/service"
+	"fmt"
+	log "github.com/sirupsen/logrus"
+
 	"evaluate_backend/app/config"
 	"evaluate_backend/app/provider"
-	"fmt"
 )
 
 func Init() {
@@ -15,4 +18,12 @@ func Init() {
 	}
 	//cos
 	provider.InitCos(config.Conf)
+	//cron
+	cronClient := provider.InitCron()
+	_, err := cronClient.AddFunc("*/1 * * * * *", service.CreateProductQcCodeCron)
+	if err != nil {
+		log.Error("cron err(%+v)", err)
+	}
+	cronClient.Start()
+
 }
