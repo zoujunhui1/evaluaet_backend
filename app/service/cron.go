@@ -16,8 +16,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var template = "http://pingce-new-1256184476.cos.ap-nanjing.myqcloud.com/template_1.png?watermark/1/image/"
-
 func CreateProductQcCodeCron() {
 	//1.获取需要生成的数据
 	condition := map[string]interface{}{
@@ -42,7 +40,7 @@ func CreateProductQcCodeCron() {
 		//2.2：二维码图片合并
 		qrCodeUrl = strings.Replace(qrCodeUrl, "https", "http", 1)
 		urlCode := base64.StdEncoding.EncodeToString([]byte(qrCodeUrl))
-		mergeUrl := template + urlCode + "/gravity/northwest"
+		mergeUrl := enums.Template + urlCode + "/gravity/northwest"
 		urlParse, _ := url.Parse(qrCodeUrl)
 		res, err := http.Get(mergeUrl)
 		if err != nil {

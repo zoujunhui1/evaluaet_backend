@@ -1,15 +1,23 @@
 package service
 
 import (
+	"encoding/base64"
+	"evaluate_backend/app/util"
+	"github.com/pkg/errors"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
+
 	"evaluate_backend/app/const/enums"
 	"evaluate_backend/app/dal/request"
 	"evaluate_backend/app/dal/response"
 	"evaluate_backend/app/model"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
 	log "github.com/sirupsen/logrus"
 	"github.com/thoas/go-funk"
-	"time"
 )
 
 func GetProductListSrv(ctx *gin.Context, req *request.GetProductListReq) (*response.GetProductListResp, error) {
@@ -60,6 +68,38 @@ func GetProductInfoSrv(ctx *gin.Context, req *request.GetProductInfoReq) (*respo
 }
 
 func EditProductSrv(ctx *gin.Context, req *request.EditProductReq) error {
+	_, dbData, err := model.GetProduct(ctx, map[string]interface{}{
+		"product_id": req.ProductID,
+	}, 1, 1)
+	if err != nil {
+		return err
+	}
+	if len(dbData) == 0 {
+		return errors.Errorf("data is not exists")
+	}
+	data := dbData[0]
+	text := data.Name + "\n" + data.Score + "\n" //文本
+	//图片操作
+	originUrl := data.QrCodeUrl + enums.TextRemark
+	originUrl = strings.Replace(originUrl, "https", "http", 1)
+	textEncode := base64.StdEncoding.EncodeToString([]byte(text))
+	fontStyleEncode := base64.StdEncoding.EncodeToString([]byte(enums.FontStyle))
+	mergeUrl := originUrl + textEncode + "/fill/" + fontStyleEncode +
+		"/fontsize/" + enums.Fontsize +
+		"/dx/" + enums.Dx +
+		"/dy/" + enums.Dy +
+		"/gravity/" + enums.Direction
+	urlParse, _ := url.Parse(originUrl)
+	res, err := http.Get(mergeUrl)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+	lastUrl, err := util.ImageUploadCommon(urlParse.Path, res.Body)
+	if err != nil {
+		log.Error("util.ImageUploadCommon error (%+v)", req.ProductID)
+
+	}
 	//生成的产品数量大于0，则说明要更新当前的产品数量（1+req.ProductCount）
 	multiProductIDs := []int64{}
 	if req.ProductCount > 0 {
@@ -81,6 +121,7 @@ func EditProductSrv(ctx *gin.Context, req *request.EditProductReq) error {
 	}
 	updateAttr := make(map[string]interface{})
 	updateAttr["status"] = enums.ProductStatusQrReady //更新为已经编辑完成
+	updateAttr["qr_code_url"] = lastUrl
 	if req.Name != "" {
 		updateAttr["name"] = req.Name
 	}
@@ -114,11 +155,10 @@ func EditProductSrv(ctx *gin.Context, req *request.EditProductReq) error {
 	if req.Desc != "" {
 		updateAttr["desc"] = req.Desc
 	}
-	err := model.UpdateMultiProduct(ctx, condition, updateAttr)
+	err = model.UpdateMultiProduct(ctx, condition, updateAttr)
 	if err != nil {
 		return err
 	}
-	//图片操作
 
 	return nil
 }
