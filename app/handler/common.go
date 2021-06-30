@@ -48,6 +48,9 @@ func Logout(ctx *gin.Context) {
 	Success(ctx, nil)
 }
 
+/*
+	图片上传
+*/
 func ImageUpload(ctx *gin.Context) {
 	//获取参数
 	req := &request.ImageUploadReq{}
