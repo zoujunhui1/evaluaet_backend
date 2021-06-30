@@ -30,6 +30,6 @@ func ImageUploadCommon(name string, content io.Reader) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	imgUrl := config.Conf.Cos.Host + "/" + name
+	imgUrl := config.Conf.Cos.Host + name
 	return imgUrl, nil
 }

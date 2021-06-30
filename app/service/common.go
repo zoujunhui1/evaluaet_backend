@@ -106,7 +106,7 @@ func CreateQrCodeSrv(bindUrl string) (string, error) {
 	}
 	//2.上传到cos
 	tmpStr := strconv.FormatInt(time.Now().Unix(), 10)
-	name := "qr_code/evaluate_qr_code_" + tmpStr + ".png"
+	name := "/qr_code/evaluate_qr_code_" + tmpStr + ".png"
 	f := strings.NewReader(string(png))
 	url, err := util.ImageUploadCommon(name, f)
 	if err != nil {

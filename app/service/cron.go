@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"strings"
 
 	"evaluate_backend/app/config"
 	"evaluate_backend/app/const/enums"
@@ -17,7 +16,7 @@ import (
 )
 
 func CreateProductQcCodeCron() {
-	//1.获取需要生成的数据
+	//1.获取需要生成二维码的数据
 	condition := map[string]interface{}{
 		"status": enums.ProductStatusQrReady,
 	}
@@ -38,9 +37,9 @@ func CreateProductQcCodeCron() {
 			continue
 		}
 		//2.2：二维码图片合并
-		qrCodeUrl = strings.Replace(qrCodeUrl, "https", "http", 1)
 		urlCode := base64.StdEncoding.EncodeToString([]byte(qrCodeUrl))
-		mergeUrl := enums.Template + urlCode + "/gravity/northwest"
+		mergeUrl := enums.ImageTemplate + enums.ImageRemark + urlCode +
+			"/gravity/" + enums.ImageDirection
 		urlParse, _ := url.Parse(qrCodeUrl)
 		res, err := http.Get(mergeUrl)
 		if err != nil {
@@ -64,4 +63,49 @@ func CreateProductQcCodeCron() {
 		}
 	}
 	return
+}
+
+func CreateProductTextCron() {
+	//1.获取需要生成文字水印的数据
+	condition := map[string]interface{}{
+		"status": enums.ProductStatusEditDone,
+	}
+	_, productList, err := model.GetProduct(context.Background(), condition, 1, 2)
+	if err != nil {
+		log.Error("model.GetProduct is error (%+v)", err)
+		return
+	}
+	for _, v := range productList {
+		text := v.Name + "\n" + v.Score + "\n" //文本
+		originUrl := v.QrCodeUrl + enums.TextRemark
+		textEncode := base64.StdEncoding.EncodeToString([]byte(text))
+		fontStyleEncode := base64.StdEncoding.EncodeToString([]byte(enums.FontStyle))
+		mergeUrl := originUrl + textEncode + "/fill/" + fontStyleEncode +
+			"/fontsize/" + enums.Fontsize +
+			"/dx/" + enums.Dx +
+			"/dy/" + enums.Dy +
+			"/gravity/" + enums.Direction
+
+		urlParse, _ := url.Parse(originUrl)
+		res, err := http.Get(mergeUrl)
+		if err != nil {
+			continue
+		}
+		defer res.Body.Close()
+		lastUrl, err := util.ImageUploadCommon(urlParse.Path, res.Body)
+		if err != nil {
+			continue
+		}
+		//3.更新数据库
+		if err := model.UpdateProduct(context.Background(), map[string]interface{}{
+			"product_id": v.ProductID,
+		}, map[string]interface{}{
+			"qr_code_url": lastUrl,
+			"status":      enums.ProductStatusQrDone,
+		}); err != nil {
+			log.Error("model.UpdateProduct is error (%+v)", v.ProductID)
+			continue
+		}
+	}
+
 }

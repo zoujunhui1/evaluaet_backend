@@ -10,13 +10,22 @@ const (
 )
 
 const (
-	Template = "http://pingce-new-1256184476.cos.ap-nanjing.myqcloud.com/template_1.png?watermark/1/image/"
-
 	IsDeletedYes int32  = 1
 	IsDeletedNo  int32  = 0
 	PwdSalt      string = "Evaluate"
 )
 
+//图片水印
+const (
+	//图片模板
+	ImageTemplate string = "http://pingce-new-1256184476.cos.ap-nanjing.myqcloud.com/template_1.png"
+	//图片水印
+	ImageRemark string = "?watermark/1/image/"
+	//位置
+	ImageDirection string = "northwest"
+)
+
+//文字水印
 const (
 	//文字水印
 	TextRemark string = "?watermark/2/text/"
@@ -32,10 +41,14 @@ const (
 	Dy string = "30"
 )
 
+//二维码水印
+
 const (
-	ProductStatusEditReady int32 = 0 //待编辑
-	ProductStatusQrReady   int32 = 1 //待生成二维码
-	ProductStatusQrDone    int32 = 2 //二维码生成完成
+	ProductStatusQrReady         int32 = 10 //待生成二维码
+	ProductStatusQrDone          int32 = 11 //二维码生成完成+待编辑
+	ProductStatusEditDone        int32 = 20 //编辑完成+文字水印待生成
+	ProductStatusTextRemarkDoing int32 = 21 //文字水印生成中
+	ProductStatusTextRemarkDone  int32 = 22 //文字水印生成完成
 )
 
 var (
