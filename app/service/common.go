@@ -50,8 +50,9 @@ func LoginSrv(ctx *gin.Context, req *request.LoginReq) (*response.LoginResp, err
 		return nil, err
 	}
 	resp := &response.LoginResp{
-		ID:   user.ID,
-		Name: user.Name,
+		ID:    user.ID,
+		Name:  user.Name,
+		Token: token,
 	}
 	return resp, nil
 }

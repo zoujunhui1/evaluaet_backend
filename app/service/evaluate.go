@@ -82,7 +82,7 @@ func EditProductSrv(ctx *gin.Context, req *request.EditProductReq) error {
 		"product_ids": multiProductIDs,
 	}
 	updateAttr := make(map[string]interface{})
-	updateAttr["status"] = enums.ProductStatusQrReady //更新为已经编辑完成
+	updateAttr["status"] = enums.ProductStatusEditDone //更新为已经编辑完成
 	if req.Name != "" {
 		updateAttr["name"] = req.Name
 	}

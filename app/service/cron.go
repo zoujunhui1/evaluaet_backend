@@ -101,7 +101,7 @@ func CreateProductTextCron() {
 			"product_id": v.ProductID,
 		}, map[string]interface{}{
 			"qr_code_url": lastUrl,
-			"status":      enums.ProductStatusQrDone,
+			"status":      enums.ProductStatusTextRemarkDone,
 		}); err != nil {
 			log.Error("model.UpdateProduct is error (%+v)", v.ProductID)
 			continue
