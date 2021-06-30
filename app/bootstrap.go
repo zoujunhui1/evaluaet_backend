@@ -26,7 +26,7 @@ func Init() {
 	//	log.Error("CreateProductQcCodeCron cron err(%+v)", err)
 	//}
 	//生成文字
-	if _, err := cronClient.AddFunc("*/5 * * * * *",
+	if _, err := cronClient.AddFunc("*/30 * * * * *",
 		service.CreateProductTextCron); err != nil {
 		log.Error("CreateProductTextCron cron err(%+v)", err)
 	}
