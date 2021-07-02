@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 
 	"evaluate_backend/app/config"
 	"evaluate_backend/app/const/enums"
@@ -86,13 +87,14 @@ func CreateProductTextCron() {
 			"/dy/" + enums.Dy +
 			"/gravity/" + enums.Direction
 
-		urlParse, _ := url.Parse(originUrl)
 		res, err := http.Get(mergeUrl)
 		if err != nil {
 			continue
 		}
 		defer res.Body.Close()
-		lastUrl, err := util.ImageUploadCommon(urlParse.Path, res.Body)
+		tmpStr := strconv.FormatInt(time.Now().Unix(), 10)
+		name := "/text_code/evaluate_text_code_" + tmpStr + ".png"
+		lastUrl, err := util.ImageUploadCommon(name, res.Body)
 		if err != nil {
 			continue
 		}
@@ -100,8 +102,8 @@ func CreateProductTextCron() {
 		if err := model.UpdateProduct(context.Background(), map[string]interface{}{
 			"product_id": v.ProductID,
 		}, map[string]interface{}{
-			"qr_code_url": lastUrl,
-			"status":      enums.ProductStatusTextRemarkDone,
+			"text_url": lastUrl,
+			"status":   enums.ProductStatusTextRemarkDone,
 		}); err != nil {
 			log.Error("model.UpdateProduct is error (%+v)", v.ProductID)
 			continue
