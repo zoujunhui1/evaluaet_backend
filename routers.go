@@ -2,11 +2,13 @@ package main
 
 import (
 	"evaluate_backend/app/handler"
+	"evaluate_backend/app/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 func routeInit() *gin.Engine {
 	r := gin.Default()
+	r.Use(middleware.Cors())
 	evaluate := r.Group("/evaluate/product")
 	{
 		//产品列表
