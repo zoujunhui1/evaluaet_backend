@@ -18,6 +18,7 @@ type Product struct {
 	Desc           string    `json:"desc"`            //备注说明
 	IsDeleted      int32     `json:"is_deleted"`      //是否删除
 	QrCodeUrl      string    `json:"qr_code_url"`     //二维码地址
+	TextUrl        string    `json:"text_url"`        //文本地址
 	CreatedAt      time.Time `json:"created_at"`      //创建时间
 	UpdatedAt      time.Time `json:"updated_at"`      //更新时间
 }

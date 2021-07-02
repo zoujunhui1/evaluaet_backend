@@ -19,6 +19,8 @@ func routeInit() *gin.Engine {
 		evaluate.POST("/edit", handler.EditProduct)
 		//删除产品
 		evaluate.POST("/del", handler.DelProduct)
+		//产品图片下载
+		evaluate.GET("/image_download", handler.ImageDownload)
 	}
 	common := r.Group("/common")
 	{

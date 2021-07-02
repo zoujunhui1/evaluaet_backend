@@ -25,6 +25,8 @@ type Product struct {
 	Score          string `json:"score"`           //评级分数
 	IdentifyResult string `json:"identify_result"` //鉴定结果
 	Desc           string `json:"desc"`            //备注说明
+	QrCodeUrl      string `json:"qr_code_url"`     //二维码地址
+	TextUrl        string `json:"text_url"`        //文本地址
 	IsDeleted      int32  `json:"is_deleted"`      //是否删除
 	CreatedAt      string `json:"created_at"`      //创建时间
 }

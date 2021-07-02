@@ -85,3 +85,21 @@ func DelProduct(ctx *gin.Context) {
 	}
 	Success(ctx, nil)
 }
+
+/*
+	图片下载
+*/
+func ImageDownload(ctx *gin.Context) {
+	//获取参数
+	req := &request.ImageDownloadReq{}
+	if err := req.Validate(ctx); err != nil {
+		log.Errorf("params validate error (%v)", err)
+		Fail(ctx, enums.ErrorInputValidate)
+		return
+	}
+	err := service.ImageDownloadSrv(ctx, req)
+	if err != nil {
+		Fail(ctx, enums.ErrorSystemException)
+		return
+	}
+}

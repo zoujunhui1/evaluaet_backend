@@ -1,6 +1,10 @@
 package service
 
 import (
+	"github.com/pkg/errors"
+	"io/ioutil"
+	"net/http"
+	"strconv"
 	"time"
 
 	"evaluate_backend/app/const/enums"
@@ -134,5 +138,31 @@ func DelProductSrv(ctx *gin.Context, req *request.DelProductReq) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func ImageDownloadSrv(ctx *gin.Context, req *request.ImageDownloadReq) error {
+	//获取数据
+	_, list, err := model.GetProduct(ctx, map[string]interface{}{
+		"product_id": req.ProductID,
+	}, 1, 1)
+	if err != nil {
+		return err
+	}
+	if len(list) == 0 {
+		return errors.Errorf("data is empty")
+	}
+	data := list[0]
+	if data.TextUrl == "" {
+		return errors.Errorf("text_url is empty")
+	}
+	resp, _ := http.Get(data.TextUrl)
+	defer resp.Body.Close()
+	content, err := ioutil.ReadAll(resp.Body)
+	productIDStr := strconv.FormatInt(data.ProductID, 10)
+	fileName := "product_id_" + productIDStr + ".png"
+	ctx.Header("Content-Type", "application/octet-stream")
+	ctx.Header("Content-Disposition", "attachment; filename=\""+fileName+"\"")
+	_, _ = ctx.Writer.WriteString(string(content))
 	return nil
 }
