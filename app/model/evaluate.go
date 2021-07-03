@@ -22,6 +22,9 @@ func GetProduct(ctx context.Context, condition map[string]interface{}, page, pag
 	if v, ok := condition["product_id"]; ok {
 		db = db.Where("product_id", v)
 	}
+	if v, ok := condition["product_id <>"]; ok {
+		db = db.Where("product_id <> ?", v)
+	}
 	offset := util.GetOffset(page, pageSize)
 	totalQuery := db
 	totalQuery.Count(&total)

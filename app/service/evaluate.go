@@ -71,8 +71,9 @@ func EditProductSrv(ctx *gin.Context, req *request.EditProductReq) error {
 	if req.ProductCount > 0 {
 		//去数据库里找对应数量的并且未被编辑过的产品
 		_, editReadyData, err := model.GetProduct(ctx, map[string]interface{}{
-			"status":   enums.ProductStatusQrDone,
-			"order_by": "product_id asc",
+			"status":        enums.ProductStatusQrDone,
+			"order_by":      "product_id asc",
+			"product_id <>": req.ProductID,
 		}, 1, int(req.ProductCount))
 		if err != nil {
 			log.Errorf("model.GetProduct error (%v)", err)
