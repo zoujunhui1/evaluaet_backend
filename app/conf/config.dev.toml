@@ -11,4 +11,4 @@ secretID = "AKIDDF1XlkTw72h7G8nBJAk48vSiiRs3xawT"
 secretKey = "IK4YliOnwoPjmZ6LK3VgaEbhW5NPAesr"
 
 [Custom]
-host = "http://81.71.91.145:8080"
+bindUrl = "http://www.qinbi.shopping:8090/#/product_info?product_id="

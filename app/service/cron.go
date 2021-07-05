@@ -16,7 +16,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func CreateProductQcCodeCron() {
+func CreateProductQrCodeCron() {
 	//1.获取需要生成二维码的数据
 	condition := map[string]interface{}{
 		"status": enums.ProductStatusQrReady,
@@ -26,7 +26,7 @@ func CreateProductQcCodeCron() {
 		log.Error("model.GetProduct is error (%+v)", err)
 		return
 	}
-	bindUrl := config.Conf.Custom.BindUrl + "/evaluate/product/info?product_id="
+	bindUrl := config.Conf.Custom.BindUrl
 	//2.生成二维码
 	for _, v := range productList {
 		//2.1:绑定地址
@@ -79,8 +79,8 @@ func CreateProductTextCron() {
 	for _, v := range productList {
 		text := v.Name + "\n" + v.Score + "\n" //文本
 		originUrl := v.QrCodeUrl + enums.TextRemark
-		textEncode := base64.StdEncoding.EncodeToString([]byte(text))
-		fontStyleEncode := base64.StdEncoding.EncodeToString([]byte(enums.FontStyle))
+		textEncode := base64.URLEncoding.EncodeToString([]byte(text))
+		fontStyleEncode := base64.URLEncoding.EncodeToString([]byte(enums.FontStyle))
 		mergeUrl := originUrl + textEncode + "/fill/" + fontStyleEncode +
 			"/fontsize/" + enums.Fontsize +
 			"/dx/" + enums.Dx +

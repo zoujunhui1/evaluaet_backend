@@ -30,6 +30,12 @@ func routeInit() *gin.Engine {
 		common.POST("/logout", handler.Logout)
 		//图片上传
 		common.POST("/image_upload", handler.ImageUpload)
+		//添加枚举
+		common.POST("/enum/add", handler.AddEnum)
+		//删除枚举
+		common.POST("/enum/del", handler.DelEnum)
+		//查询枚举
+		common.GET("/enum/list", handler.GetEnumList)
 	}
 	return r
 }

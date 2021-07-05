@@ -2,20 +2,15 @@ package service
 
 import (
 	"evaluate_backend/app/const/enums"
+	"evaluate_backend/app/dal/database"
 	"evaluate_backend/app/dal/request"
 	"evaluate_backend/app/dal/response"
 	"evaluate_backend/app/model"
 	"evaluate_backend/app/util"
-	"flag"
-	"github.com/golang/freetype"
+	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/skip2/go-qrcode"
-	"image"
-	"image/color"
-	"image/png"
-	"io/ioutil"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -116,63 +111,75 @@ func CreateQrCodeSrv(bindUrl string) (string, error) {
 	return url, nil
 }
 
-func CreateImg4Text(text []string, dx, dy int) (string, error) {
-	var (
-		size    = flag.Float64("size", 12, "font size in points")
-		spacing = flag.Float64("spacing", 2, "line spacing (e.g. 2 means double spaced)")
-	)
-	tt := time.Now().Unix()
-	name := "image_text_" + strconv.FormatInt(tt, 10)
-	imgFile, _ := os.Create(name)
-	defer imgFile.Close()
-	img := image.NewNRGBA(image.Rect(0, 0, dx, dy))
-	//设置每个点的 RGBA (Red,Green,Blue,Alpha(设置透明度))
-	for y := 0; y < dy; y++ {
-		for x := 0; x < dx; x++ {
-			//设置一块 白色(255,255,255)不透明的背景
-			img.Set(x, y, color.RGBA{255, 255, 255, 255})
-		}
-	}
-	//读取字体数据
-	fontBytes, err := ioutil.ReadFile("msyh.ttc")
+func AddEnumSrv(ctx *gin.Context, req *request.AddEnumReq) error {
+	enumMax := 0
+	//所传的enum_id是否存在
+	_, levelOneData, err := model.GetEnums(ctx, map[string]interface{}{
+		"enum_id": req.EnumID,
+	}, 1, 1)
 	if err != nil {
-		log.Error("msyh.ttc is error(%+v)", err)
-		return "", err
+		return err
 	}
-	//载入字体数据
-	font, err := freetype.ParseFont(fontBytes)
+	if len(levelOneData) == 0 {
+		return errors.Errorf("enum_id is not exists (%+v)", req)
+	}
+	//获取此enum_id下的枚举最大值
+	_, levelTwoData, err := model.GetEnums(ctx, map[string]interface{}{
+		"father_enum_id": req.EnumID,
+		"order_by":       "enum_id desc",
+	}, 1, 1)
+	if len(levelTwoData) == 0 {
+		enumMax = req.EnumID + 1
+	} else {
+		enumMax = int(levelTwoData[0].EnumID) + 1
+	}
+	insertData := database.Enums{
+		EnumID:       int32(enumMax),
+		EnumName:     req.EnumName,
+		FatherEnumID: levelOneData[0].EnumID,
+		Level:        2,
+	}
+	if err := model.AddEnumsModel(ctx, insertData); err != nil {
+		return err
+	}
+	return nil
+}
+
+func DelEnumSrv(ctx *gin.Context, req *request.DelEnumReq) error {
+	condition := map[string]interface{}{
+		"enum_id": req.EnumID,
+	}
+	updateAttr := map[string]interface{}{
+		"is_deleted": enums.IsDeletedYes,
+	}
+	err := model.UpdateEnumsModel(ctx, condition, updateAttr)
 	if err != nil {
-		log.Error("freetype.ParseFont error(%+v)", err)
-		return "", err
+		return err
 	}
-	f := freetype.NewContext()
-	//设置分辨率
-	f.SetDPI(72)
-	//设置字体
-	f.SetFont(font)
-	//设置尺寸
-	f.SetFontSize(26)
-	f.SetClip(img.Bounds())
-	//设置输出的图片
-	f.SetDst(img)
-	//设置字体颜色(红色)
-	f.SetSrc(image.NewUniform(color.RGBA{0, 0, 0, 255}))
-	//设置字体的位置
-	pt := freetype.Pt(40, 40+int(f.PointToFixed(*size))>>8)
-	//写入文字
-	for _, v := range text {
-		_, err = f.DrawString(v, pt)
-		if err != nil {
-			log.Error("DrawString error(%+v)", err)
-			return "", err
-		}
-		pt.Y += f.PointToFixed(*size * *spacing)
+	return nil
+}
+
+func GetEnumSrv(ctx *gin.Context, req *request.GetEnumReq) (*response.GetEnumListResp, error) {
+	condition := make(map[string]interface{})
+	if req.EnumID > 0 {
+		condition["enum_id"] = req.EnumID
 	}
-	//以png 格式写入文件
-	err = png.Encode(imgFile, img)
+	total, list, err := model.GetEnums(ctx, condition, req.Page, req.PageSize)
 	if err != nil {
-		log.Error("png.Encode error(%+v)", err)
-		return "", err
+		return nil, err
 	}
-	return "", nil
+	resp := &response.GetEnumListResp{
+		List: []response.Enums{},
+	}
+	resp.Total = total
+	resp.PageSize = req.PageSize
+	resp.Page = req.Page
+	if len(list) == 0 {
+		return resp, nil
+	}
+	if err := copier.Copy(&resp.List, list); err != nil {
+		log.Errorf("GetProductListSrv copier.Copy is error (%+v)", err)
+		return nil, err
+	}
+	return resp, nil
 }

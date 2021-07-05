@@ -11,3 +11,16 @@ type LoginResp struct {
 type ImageUploadResp struct {
 	Url string `json:"url"`
 }
+
+type GetEnumListResp struct {
+	Total    int64   `json:"total"`
+	Page     int     `json:"page"`
+	PageSize int     `json:"page_size"`
+	List     []Enums `json:"enums"`
+}
+
+type Enums struct {
+	EnumID   int32  `json:"enum_id"`
+	EnumName string `json:"enum_name"`
+	Level    int32  `json:"level"`
+}
