@@ -16,7 +16,7 @@ type GetEnumListResp struct {
 	Total    int64   `json:"total"`
 	Page     int     `json:"page"`
 	PageSize int     `json:"page_size"`
-	List     []Enums `json:"enums"`
+	List     []Enums `json:"list"`
 }
 
 type Enums struct {
