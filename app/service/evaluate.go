@@ -51,16 +51,34 @@ func GetProductInfoSrv(ctx *gin.Context, req *request.GetProductInfoReq) (*respo
 	if err != nil {
 		return nil, err
 	}
-	resp := &response.GetProductInfoResp{
-		List: []response.Product{},
+	if len(list) == 0 {
+		return nil, nil
 	}
-	if err := copier.Copy(&resp.List, list); err != nil {
+	product := list[0]
+	resp := &response.GetProductInfoResp{
+		Info: &response.Product{},
+	}
+	if err := copier.Copy(&resp.Info, product); err != nil {
 		log.Errorf("GetProductListSrv copier.Copy is error (%v)", err)
 		return nil, err
 	}
-	for k, v := range list {
-		createAt := v.CreatedAt.Unix()
-		resp.List[k].CreatedAt = time.Unix(createAt, 0).Format("2006-01-02 15:04:05")
+	createAt := product.CreatedAt.Unix()
+	resp.Info.CreatedAt = time.Unix(createAt, 0).Format("2006-01-02 15:04:05")
+	//获取图片
+	imgList, err := model.GetProductAddition(ctx, map[string]interface{}{
+		"product_id": req.ProductID,
+	})
+	var addition []*response.ProductAddition
+	if len(imgList) == 0 {
+		resp.Info.Pic = addition
+		return resp, nil
+	}
+	if err := copier.Copy(&addition, imgList); err != nil {
+		log.Errorf("addition copier.Copy is error (%v)", err)
+		return nil, err
+	}
+	if len(imgList) > 0 {
+		resp.Info.Pic = addition
 	}
 	return resp, nil
 }
