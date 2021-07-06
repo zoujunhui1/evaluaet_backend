@@ -77,7 +77,7 @@ func LogoutSrv(ctx *gin.Context, req *request.LogoutReq) error {
 
 func ImageUploadSrv(ctx *gin.Context, req *request.ImageUploadReq) (*response.ImageUploadResp, error) {
 	tmpStr := strconv.FormatInt(time.Now().Unix(), 10)
-	name := "/product/evaluate_" + tmpStr + ".png"
+	name := "/product/evaluate_" + tmpStr + ".jpg"
 	fileContent, err := req.Image.Open()
 	if err != nil {
 		return nil, err
@@ -96,14 +96,14 @@ func ImageUploadSrv(ctx *gin.Context, req *request.ImageUploadReq) (*response.Im
 
 func CreateQrCodeSrv(bindUrl string) (string, error) {
 	//1.生成二维码
-	png, err := qrcode.Encode(bindUrl, qrcode.Medium, 128)
+	image, err := qrcode.Encode(bindUrl, qrcode.Medium, 128)
 	if err != nil {
 		return "", err
 	}
 	//2.上传到cos
 	tmpStr := strconv.FormatInt(time.Now().Unix(), 10)
-	name := "/qr_code/evaluate_qr_code_" + tmpStr + ".png"
-	f := strings.NewReader(string(png))
+	name := "/qr_code/evaluate_qr_code_" + tmpStr + ".jpg"
+	f := strings.NewReader(string(image))
 	url, err := util.ImageUploadCommon(name, f)
 	if err != nil {
 		return "", err

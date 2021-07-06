@@ -182,7 +182,7 @@ func ImageDownloadSrv(ctx *gin.Context, req *request.ImageDownloadReq) error {
 	defer resp.Body.Close()
 	content, err := ioutil.ReadAll(resp.Body)
 	productIDStr := strconv.FormatInt(data.ProductID, 10)
-	fileName := "product_id_" + productIDStr + ".png"
+	fileName := "product_id_" + productIDStr + ".jpg"
 	ctx.Header("Content-Type", "application/octet-stream")
 	ctx.Header("Content-Disposition", "attachment; filename=\""+fileName+"\"")
 	_, _ = ctx.Writer.WriteString(string(content))

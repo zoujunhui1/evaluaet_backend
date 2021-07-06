@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"encoding/base64"
-	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -22,7 +21,7 @@ func CreateProductQrCodeCron() {
 	condition := map[string]interface{}{
 		"status": enums.ProductStatusQrReady,
 	}
-	_, productList, err := model.GetProduct(context.Background(), condition, 1, 2)
+	_, productList, err := model.GetProduct(context.Background(), condition, 1, 1)
 	if err != nil {
 		log.Error("model.GetProduct is error (%+v)", err)
 		return
@@ -90,24 +89,24 @@ func CreateProductTextCron() {
 		weight := strconv.Itoa(int(v.Weight))     //重量
 		proID := strconv.Itoa(int(v.ProductID))   //编号id
 		text := v.Denomination + "\n" + v.Name + "\n" + v.ProductVersion + "\n" +
-			score + level + "\n" + diameter + "*" + thick + " " + weight + "g\n" + proID //文本
+			score + level + "\n" +
+			diameter + "*" + thick + " " +
+			weight + "g\n" + proID //文本
 		originUrl := v.QrCodeUrl + enums.TextRemark
-		fmt.Println(text)
-		textEncode := base64.URLEncoding.EncodeToString([]byte("测试"))
+		textEncode := base64.URLEncoding.EncodeToString([]byte(text))
 		fontStyleEncode := base64.URLEncoding.EncodeToString([]byte(enums.FontStyle))
 		mergeUrl := originUrl + textEncode + "/fill/" + fontStyleEncode +
 			"/fontsize/" + enums.Fontsize +
 			"/dx/" + enums.Dx +
 			"/dy/" + enums.Dy +
 			"/gravity/" + enums.Direction
-
 		res, err := http.Get(mergeUrl)
 		if err != nil {
 			continue
 		}
 		defer res.Body.Close()
 		tmpStr := strconv.FormatInt(time.Now().Unix(), 10)
-		name := "/text_code/evaluate_text_code_" + tmpStr + ".png"
+		name := "/text_code/evaluate_text_code_" + tmpStr + ".jpg"
 		lastUrl, err := util.ImageUploadCommon(name, res.Body)
 		if err != nil {
 			continue
