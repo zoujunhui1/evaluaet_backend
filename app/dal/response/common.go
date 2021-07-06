@@ -20,7 +20,8 @@ type GetEnumListResp struct {
 }
 
 type Enums struct {
-	EnumID   int32  `json:"enum_id"`
-	EnumName string `json:"enum_name"`
-	Level    int32  `json:"level"`
+	EnumID       int32  `json:"enum_id"`
+	EnumName     string `json:"enum_name"`
+	FatherEnumID int32  `json:"father_enum_id"`
+	Level        int32  `json:"level"`
 }

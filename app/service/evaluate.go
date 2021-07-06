@@ -130,8 +130,11 @@ func EditProductSrv(ctx *gin.Context, req *request.EditProductReq) error {
 	if req.Diameter > 0 {
 		updateAttr["diameter"] = req.Diameter
 	}
-	if req.Score != "" {
+	if req.Score > 0 {
 		updateAttr["score"] = req.Score
+	}
+	if req.Level > 0 {
+		updateAttr["level"] = req.Level
 	}
 	if req.IdentifyResult != "" {
 		updateAttr["identify_result"] = req.IdentifyResult

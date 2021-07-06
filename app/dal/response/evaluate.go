@@ -22,7 +22,8 @@ type Product struct {
 	Weight         int32              `json:"weight"`          //重量
 	Thick          int32              `json:"thick"`           //厚度
 	Diameter       int32              `json:"diameter"`        //直径
-	Score          string             `json:"score"`           //评级分数
+	Score          int32              `json:"score"`           //评级分数
+	Level          int32              `json:"level"`           //级别
 	IdentifyResult string             `json:"identify_result"` //鉴定结果
 	Desc           string             `json:"desc"`            //备注说明
 	QrCodeUrl      string             `json:"qr_code_url"`     //二维码地址

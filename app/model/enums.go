@@ -31,6 +31,26 @@ func GetEnums(ctx context.Context, condition map[string]interface{}, page, pageS
 	return
 }
 
+func GetAllEnums(ctx context.Context, condition map[string]interface{}) (enumList []database.Enums, err error) {
+	db := provider.EvaluateDB
+	m := database.Enums{}
+	db = db.Model(m).Select(util.GetJsonFields(m)).Where("is_deleted = ?", enums.IsDeletedNo)
+	if v, ok := condition["order_by"]; ok {
+		db = db.Order(v)
+	}
+	if v, ok := condition["enum_id"]; ok {
+		db = db.Where("enum_id", v)
+	}
+	if v, ok := condition["father_enum_id"]; ok {
+		db = db.Where("father_enum_id", v)
+	}
+	result := db.Order("id desc").Find(&enumList)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return
+}
+
 func AddEnumsModel(ctx context.Context, enumsModel database.Enums) error {
 	db := provider.EvaluateDB
 	result := db.Create(&enumsModel)

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/base64"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -76,10 +77,23 @@ func CreateProductTextCron() {
 		log.Error("model.GetProduct is error (%+v)", err)
 		return
 	}
+	enumList, err := model.GetAllEnums(context.Background(), map[string]interface{}{})
+	enumsMap := make(map[int32]string)
+	for _, v := range enumList {
+		enumsMap[v.EnumID] = v.EnumName
+	}
 	for _, v := range productList {
-		text := v.Name + "\n" + v.Score + "\n" //文本
+		score := enumsMap[v.Score]                //分数
+		level := enumsMap[v.Level]                //级别
+		diameter := strconv.Itoa(int(v.Diameter)) //直径
+		thick := strconv.Itoa(int(v.Thick))       //厚度
+		weight := strconv.Itoa(int(v.Weight))     //重量
+		proID := strconv.Itoa(int(v.ProductID))   //编号id
+		text := v.Denomination + "\n" + v.Name + "\n" + v.ProductVersion + "\n" +
+			score + level + "\n" + diameter + "*" + thick + " " + weight + "g\n" + proID //文本
 		originUrl := v.QrCodeUrl + enums.TextRemark
-		textEncode := base64.URLEncoding.EncodeToString([]byte(text))
+		fmt.Println(text)
+		textEncode := base64.URLEncoding.EncodeToString([]byte("测试"))
 		fontStyleEncode := base64.URLEncoding.EncodeToString([]byte(enums.FontStyle))
 		mergeUrl := originUrl + textEncode + "/fill/" + fontStyleEncode +
 			"/fontsize/" + enums.Fontsize +
