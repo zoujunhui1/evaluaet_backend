@@ -90,7 +90,7 @@ func CreateProductTextCron() {
 		proID := strconv.Itoa(int(v.ProductID))   //编号id
 		text := v.Denomination + "\n" + v.Name + "\n" + v.ProductVersion + "\n" +
 			score + level + "\n" +
-			diameter + "*" + thick + " " +
+			diameter + "*" + thick + " mm" +
 			weight + "g\n" + proID //文本
 		originUrl := v.QrCodeUrl + enums.TextRemark
 		textEncode := base64.URLEncoding.EncodeToString([]byte(text))
