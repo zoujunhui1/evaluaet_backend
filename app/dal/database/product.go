@@ -10,6 +10,7 @@ type Product struct {
 	IssueTime      string    `json:"issue_time"`      //发行时间
 	Denomination   string    `json:"denomination"`    //面值
 	ProductVersion string    `json:"product_version"` //版别
+	Material       string    `json:"material"`        //材料
 	Weight         float32   `json:"weight"`          //重量
 	Thick          float32   `json:"thick"`           //厚度
 	Diameter       float32   `json:"diameter"`        //直径
