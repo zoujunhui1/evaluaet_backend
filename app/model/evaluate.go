@@ -38,7 +38,17 @@ func GetProduct(ctx context.Context, condition map[string]interface{}, page, pag
 func UpdateProduct(ctx context.Context, condition map[string]interface{}, updateAttrs map[string]interface{}) error {
 	db := provider.EvaluateDB
 	m := database.Product{}
-	result := db.Model(m).Where(condition).Updates(updateAttrs)
+	db = db.Model(m)
+	if len(condition) == 0 {
+		return errors.Errorf("condition is empty")
+	}
+	if v, ok := condition["product_id"]; ok {
+		db = db.Where("product_id", v)
+	}
+	if v, ok := condition["product_ids"]; ok {
+		db = db.Where("product_id in ?", v)
+	}
+	result := db.Updates(updateAttrs)
 	if result.Error != nil {
 		return result.Error
 	}

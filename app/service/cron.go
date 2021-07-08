@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/base64"
+	"github.com/thoas/go-funk"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -71,9 +72,21 @@ func CreateProductTextCron() {
 	condition := map[string]interface{}{
 		"status": enums.ProductStatusEditDone,
 	}
-	_, productList, err := model.GetProduct(context.Background(), condition, 1, 2)
+	_, productList, err := model.GetProduct(context.Background(), condition, 1, 10)
 	if err != nil {
 		log.Error("model.GetProduct is error (%+v)", err)
+		return
+	}
+	if len(productList) == 0 {
+		return
+	}
+	proIDs := funk.Get(productList, "ProductID")
+	if err := model.UpdateProduct(context.Background(), map[string]interface{}{
+		"product_ids": proIDs,
+	}, map[string]interface{}{
+		"status": enums.ProductStatusTextRemarkDoing,
+	}); err != nil {
+		log.Error("model.UpdateProduct is error (%+v)", proIDs)
 		return
 	}
 	enumList, err := model.GetAllEnums(context.Background(), map[string]interface{}{})
@@ -82,15 +95,15 @@ func CreateProductTextCron() {
 		enumsMap[v.EnumID] = v.EnumName
 	}
 	for _, v := range productList {
-		score := enumsMap[v.Score]                //分数
-		level := enumsMap[v.Level]                //级别
-		diameter := strconv.Itoa(int(v.Diameter)) //直径
-		thick := strconv.Itoa(int(v.Thick))       //厚度
-		weight := strconv.Itoa(int(v.Weight))     //重量
-		proID := strconv.Itoa(int(v.ProductID))   //编号id
-		text := v.Denomination + "\n" + v.Name + "\n" + v.ProductVersion + "\n" +
-			score + level + "\n" +
-			diameter + "*" + thick + " mm" +
+		score := enumsMap[v.Score]                                       //分数
+		level := enumsMap[v.Level]                                       //级别
+		diameter := strconv.FormatFloat(float64(v.Diameter), 'g', 5, 32) //直径
+		thick := strconv.FormatFloat(float64(v.Thick), 'g', 5, 32)       //厚度
+		weight := strconv.FormatFloat(float64(v.Weight), 'g', 5, 32)     //重量
+		proID := strconv.Itoa(int(v.ProductID))                          //编号id
+		text := v.Name + "\n" + v.Denomination + "\n" + v.ProductVersion + "\n" +
+			"NPGS " + level + score + "\n" +
+			diameter + "*" + thick + "mm " +
 			weight + "g\n" + proID //文本
 		originUrl := v.QrCodeUrl + enums.TextRemark
 		textEncode := base64.URLEncoding.EncodeToString([]byte(text))

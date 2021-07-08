@@ -32,7 +32,7 @@ const (
 	//文字水印字体
 	FontStyle string = "simhei黑体.ttf"
 	//字体大小
-	Fontsize string = "40"
+	Fontsize string = "25"
 	//位置
 	Direction string = "south"
 	//水平
