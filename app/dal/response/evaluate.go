@@ -19,9 +19,9 @@ type Product struct {
 	IssueTime      string             `json:"issue_time"`      //发行时间
 	Denomination   string             `json:"denomination"`    //面值
 	ProductVersion string             `json:"product_version"` //版别
-	Weight         int32              `json:"weight"`          //重量
-	Thick          int32              `json:"thick"`           //厚度
-	Diameter       int32              `json:"diameter"`        //直径
+	Weight         float32            `json:"weight"`          //重量
+	Thick          float32            `json:"thick"`           //厚度
+	Diameter       float32            `json:"diameter"`        //直径
 	Score          int32              `json:"score"`           //评级分数
 	Level          int32              `json:"level"`           //级别
 	IdentifyResult string             `json:"identify_result"` //鉴定结果

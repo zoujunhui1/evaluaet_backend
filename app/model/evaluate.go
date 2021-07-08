@@ -28,7 +28,7 @@ func GetProduct(ctx context.Context, condition map[string]interface{}, page, pag
 	offset := util.GetOffset(page, pageSize)
 	totalQuery := db
 	totalQuery.Count(&total)
-	result := db.Offset(offset).Limit(pageSize).Order("id desc").Find(&productList)
+	result := db.Offset(offset).Limit(pageSize).Find(&productList)
 	if result.Error != nil {
 		return 0, nil, result.Error
 	}
