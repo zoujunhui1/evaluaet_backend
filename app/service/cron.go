@@ -101,7 +101,9 @@ func CreateProductTextCron() {
 		thick := strconv.FormatFloat(float64(v.Thick), 'g', 5, 32)       //厚度
 		weight := strconv.FormatFloat(float64(v.Weight), 'g', 5, 32)     //重量
 		proID := strconv.Itoa(int(v.ProductID))                          //编号id
-		text := v.Name + "\n" + v.Denomination + "\n" + v.ProductVersion + "\n" +
+		text := v.Name + "\n" +
+			v.Denomination + " " + v.Material + "\n" +
+			v.ProductVersion + "\n" +
 			"NPGS " + level + score + "\n" +
 			diameter + "*" + thick + "mm " +
 			weight + "g\n" + proID //文本

@@ -142,6 +142,9 @@ func EditProductSrv(ctx *gin.Context, req *request.EditProductReq) error {
 	if req.Desc != "" {
 		updateAttr["desc"] = req.Desc
 	}
+	if req.Material != "" {
+		updateAttr["material"] = req.Material
+	}
 	err := model.UpdateMultiProduct(ctx, condition, updateAttr)
 	if err != nil {
 		return err
@@ -182,7 +185,7 @@ func ImageDownloadSrv(ctx *gin.Context, req *request.ImageDownloadReq) error {
 	defer resp.Body.Close()
 	content, err := ioutil.ReadAll(resp.Body)
 	productIDStr := strconv.FormatInt(data.ProductID, 10)
-	fileName := "product_id_" + productIDStr + ".jpg"
+	fileName := productIDStr + ".jpg"
 	ctx.Header("Content-Type", "application/octet-stream")
 	ctx.Header("Content-Disposition", "attachment; filename=\""+fileName+"\"")
 	_, _ = ctx.Writer.WriteString(string(content))
