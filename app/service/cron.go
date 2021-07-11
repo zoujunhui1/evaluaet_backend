@@ -20,7 +20,7 @@ func CreateProductQrCodeCron() {
 	condition := map[string]interface{}{
 		"status": enums.ProductStatusQrReady,
 	}
-	_, productList, err := model.GetProduct(context.Background(), condition, 1, 100)
+	_, productList, err := model.GetProduct(context.Background(), condition, 1, 4)
 	if err != nil {
 		log.Error("model.GetProduct is error (%+v)", err)
 		return
@@ -37,9 +37,9 @@ func CreateProductQrCodeCron() {
 		log.Error("model.UpdateProduct is error (%+v)", proIDs)
 		return
 	}
-	bindUrl := config.Conf.Custom.BindUrl
 	//2.生成二维码
 	for _, v := range productList {
+		bindUrl := config.Conf.Custom.BindUrl
 		//2.1:绑定地址
 		productID := strconv.FormatInt(v.ProductID, 10)
 		bindUrl = bindUrl + productID
