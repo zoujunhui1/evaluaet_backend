@@ -45,7 +45,8 @@ const (
 
 const (
 	ProductStatusQrReady         int32 = 10 //待生成二维码
-	ProductStatusQrDone          int32 = 11 //二维码生成完成+待编辑
+	ProductStatusQrDoing         int32 = 11 //正在二维码
+	ProductStatusQrDone          int32 = 12 //二维码生成完成+待编辑
 	ProductStatusEditDone        int32 = 20 //编辑完成+文字水印待生成
 	ProductStatusTextRemarkDoing int32 = 21 //文字水印生成中
 	ProductStatusTextRemarkDone  int32 = 22 //文字水印生成完成

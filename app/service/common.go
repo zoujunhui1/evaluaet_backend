@@ -94,14 +94,14 @@ func ImageUploadSrv(ctx *gin.Context, req *request.ImageUploadReq) (*response.Im
 	return &resp, nil
 }
 
-func CreateQrCodeSrv(bindUrl string) (string, error) {
+func CreateQrCodeSrv(bindUrl string, productID int64) (string, error) {
 	//1.生成二维码
 	image, err := qrcode.Encode(bindUrl, qrcode.Medium, 128)
 	if err != nil {
 		return "", err
 	}
 	//2.上传到cos
-	tmpStr := strconv.FormatInt(time.Now().Unix(), 10)
+	tmpStr := strconv.FormatInt(productID, 10)
 	name := "/qr_code/evaluate_qr_code_" + tmpStr + ".jpg"
 	f := strings.NewReader(string(image))
 	url, err := util.ImageUploadCommon(name, f)

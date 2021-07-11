@@ -70,3 +70,16 @@ func UpdateMultiProduct(ctx context.Context, condition map[string]interface{}, u
 	}
 	return nil
 }
+
+func CreateProduct(ctx context.Context, insertData []map[string]interface{}) error {
+	db := provider.EvaluateDB
+	m := database.Product{}
+	if len(insertData) == 0 {
+		return errors.Errorf("insertData is empty")
+	}
+	result := db.Model(m).Create(insertData)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}

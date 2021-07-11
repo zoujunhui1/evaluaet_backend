@@ -11,5 +11,5 @@ func Init() {
 
 func TestCreateQrCode(t *testing.T) {
 	Init()
-	_, _ = CreateQrCodeSrv("")
+	_, _ = CreateQrCodeSrv("", 1)
 }

@@ -3,16 +3,14 @@ package service
 import (
 	"context"
 	"encoding/base64"
-	"github.com/thoas/go-funk"
-	"net/http"
-	"net/url"
-	"strconv"
-	"time"
-
 	"evaluate_backend/app/config"
 	"evaluate_backend/app/const/enums"
 	"evaluate_backend/app/model"
 	"evaluate_backend/app/util"
+	"github.com/thoas/go-funk"
+	"net/http"
+	"net/url"
+	"strconv"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -22,9 +20,21 @@ func CreateProductQrCodeCron() {
 	condition := map[string]interface{}{
 		"status": enums.ProductStatusQrReady,
 	}
-	_, productList, err := model.GetProduct(context.Background(), condition, 1, 1)
+	_, productList, err := model.GetProduct(context.Background(), condition, 1, 100)
 	if err != nil {
 		log.Error("model.GetProduct is error (%+v)", err)
+		return
+	}
+	if len(productList) == 0 {
+		return
+	}
+	proIDs := funk.Get(productList, "ProductID")
+	if err := model.UpdateProduct(context.Background(), map[string]interface{}{
+		"product_ids": proIDs,
+	}, map[string]interface{}{
+		"status": enums.ProductStatusQrDoing,
+	}); err != nil {
+		log.Error("model.UpdateProduct is error (%+v)", proIDs)
 		return
 	}
 	bindUrl := config.Conf.Custom.BindUrl
@@ -33,7 +43,7 @@ func CreateProductQrCodeCron() {
 		//2.1:绑定地址
 		productID := strconv.FormatInt(v.ProductID, 10)
 		bindUrl = bindUrl + productID
-		qrCodeUrl, err := CreateQrCodeSrv(bindUrl)
+		qrCodeUrl, err := CreateQrCodeSrv(bindUrl, v.ProductID)
 		if err != nil {
 			log.Error("CreateQrCodeSrv is error (%+v)", productID)
 			continue
@@ -120,7 +130,7 @@ func CreateProductTextCron() {
 			continue
 		}
 		defer res.Body.Close()
-		tmpStr := strconv.FormatInt(time.Now().Unix(), 10)
+		tmpStr := strconv.FormatInt(v.ProductID, 10)
 		name := "/text_code/evaluate_text_code_" + tmpStr + ".jpg"
 		lastUrl, err := util.ImageUploadCommon(name, res.Body)
 		if err != nil {

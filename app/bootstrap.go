@@ -30,4 +30,6 @@ func Init() {
 		log.Error("CreateProductTextCron cron err(%+v)", err)
 	}
 	cronClient.Start()
+
+	//service.CreateProductJobSrv()
 }
