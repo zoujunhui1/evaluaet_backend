@@ -13,6 +13,8 @@ func routeInit() *gin.Engine {
 	{
 		//产品列表
 		evaluate.GET("/list", handler.GetProductList)
+		//范围查询
+		evaluate.GET("/range_list", handler.GetProductRangeList)
 		//获取产品详情
 		evaluate.GET("/info", handler.GetProductInfo)
 		//编辑产品

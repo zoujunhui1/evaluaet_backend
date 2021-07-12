@@ -11,6 +11,10 @@ type GetProductInfoResp struct {
 	Info *Product `json:"list"`
 }
 
+type GetProductRangeResp struct {
+	List []Product `json:"list"`
+}
+
 type Product struct {
 	ID             int64              `json:"id"`              //自增id
 	Name           string             `json:"name"`            //产品名称

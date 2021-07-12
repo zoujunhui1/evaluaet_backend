@@ -44,6 +44,29 @@ func GetProductListSrv(ctx *gin.Context, req *request.GetProductListReq) (*respo
 	return resp, nil
 }
 
+func GetProductRangeListSrv(ctx *gin.Context, req *request.GetProductRangeListReq) (*response.GetProductRangeResp, error) {
+	condition := make(map[string]interface{})
+	condition["product_id >= ?"] = req.ProductIDStart
+	condition["product_id <= ?"] = req.ProductIDEnd
+	pageSize := req.ProductIDEnd - req.ProductIDStart + 1
+	_, list, err := model.GetProduct(ctx, condition, 1, int(pageSize))
+	if err != nil {
+		return nil, err
+	}
+	resp := &response.GetProductRangeResp{
+		List: []response.Product{},
+	}
+	if err := copier.Copy(&resp.List, list); err != nil {
+		log.Errorf("GetProductListSrv copier.Copy is error (%+v)", err)
+		return nil, err
+	}
+	for k, v := range list {
+		createAt := v.CreatedAt.Unix()
+		resp.List[k].CreatedAt = time.Unix(createAt, 0).Format("2006-01-02 15:04:05")
+	}
+	return resp, nil
+}
+
 func GetProductInfoSrv(ctx *gin.Context, req *request.GetProductInfoReq) (*response.GetProductInfoResp, error) {
 	condition := make(map[string]interface{})
 	condition["product_id"] = req.ProductID

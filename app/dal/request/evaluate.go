@@ -28,6 +28,25 @@ func (req *GetProductListReq) Validate(ctx *gin.Context) error {
 	return nil
 }
 
+//产品列表
+type GetProductRangeListReq struct {
+	ProductIDStart int64 `form:"product_id_start" json:"product_id_start"`
+	ProductIDEnd   int64 `form:"product_id_end" json:"product_id_end"`
+}
+
+func (req *GetProductRangeListReq) Validate(ctx *gin.Context) error {
+	if err := ctx.BindQuery(&req); err != nil {
+		return errors.Errorf("params validate err(%v)", err)
+	}
+	if req.ProductIDStart <= 0 || req.ProductIDEnd <= 0 {
+		return errors.Errorf("product_id <=0 error %+v %+v", req.ProductIDStart, req.ProductIDEnd)
+	}
+	if req.ProductIDStart > req.ProductIDEnd {
+		return errors.Errorf("product_id start > end error %+v %+v", req.ProductIDStart, req.ProductIDEnd)
+	}
+	return nil
+}
+
 //编辑产品
 type EditProductReq struct {
 	ProductID      int64   `json:"product_id" binding:"required"` //产品id

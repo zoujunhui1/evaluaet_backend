@@ -29,6 +29,26 @@ func GetProductList(ctx *gin.Context) {
 }
 
 /*
+	产品范围list
+*/
+func GetProductRangeList(ctx *gin.Context) {
+	//获取参数
+	req := &request.GetProductRangeListReq{}
+	if err := req.Validate(ctx); err != nil {
+		log.Errorf("params validate error (%v)", err)
+		Fail(ctx, enums.ErrorInputValidate)
+		return
+	}
+	resp, err := service.GetProductRangeListSrv(ctx, req)
+	if err != nil {
+		log.Errorf("GetProductList resp is error (%v)", err)
+		Fail(ctx, enums.ErrorSystemException)
+		return
+	}
+	Success(ctx, resp)
+}
+
+/*
 	产品详情
 */
 func GetProductInfo(ctx *gin.Context) {
